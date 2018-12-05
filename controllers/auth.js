@@ -36,7 +36,7 @@ module.exports = {
             const body = {
                 username: Helpers.firstLetterUpper(value.username),
                 email: Helpers.lowerCase(value.email),
-                passoword: hash
+                password: hash
             };
             User.create(body)
                 .then(user => {
