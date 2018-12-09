@@ -1,8 +1,11 @@
 const Joi = require('joi');
 const HttpStatus = require('http-status-codes');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/userModels');
 const Helpers = require('../Helpers/helper');
-const bcrypt = require('bcryptjs');
+const dbConfig = require('../config/secret');
 
 module.exports = {
     async CreateUser(req, res) {
@@ -14,7 +17,6 @@ module.exports = {
 
         const { error, value } = Joi.validate(req.body, schema);
         
-        console.log(value);
         if (error && error.details) {
             return res.status(HttpStatus.BAD_REQUEST).json({ message: error.details });
         };
@@ -40,10 +42,13 @@ module.exports = {
             };
             User.create(body)
                 .then(user => {
-                    res.status(HttpStatus.CREATED).json({message: 'User created successfully', user});
+                    const token = jwt.sign({ data: user }, dbConfig.secret, {
+                        expiresIn: 120
+                    })
+                    res.status(HttpStatus.CREATED).json({message: 'User created successfully', user, token});
                 })
                 .catch(err => {
-                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: 'Error occured'});
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: 'Error occurred'});
                 })
         });
     }
