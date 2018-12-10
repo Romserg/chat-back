@@ -18,18 +18,18 @@ module.exports = {
         const { error, value } = Joi.validate(req.body, schema);
         
         if (error && error.details) {
-            return res.status(HttpStatus.BAD_REQUEST).json({ message: error.details });
-        };
+            return res.status(HttpStatus.BAD_REQUEST).json({ msg: error.details });
+        }
 
         const userEmail = await User.findOne({ email: Helpers.lowerCase(req.body.email) });
         if (userEmail) {
             return res.status(HttpStatus.CONFLICT).json({ message: 'Email already exist' });
-        };
+        }
 
         const userName = await User.findOne({ username: Helpers.firstLetterUpper(req.body.username) });
         if (userName) {
             return res.status(HttpStatus.CONFLICT).json({ message: 'Username already exist' });
-        };
+        }
 
         return bcrypt.hash(value.password, 10, (err, hash) => {
             if (err) {
@@ -44,8 +44,8 @@ module.exports = {
                 .then(user => {
                     const token = jwt.sign({ data: user }, dbConfig.secret, {
                         expiresIn: 120
-                    })
-                    res.cookie('auth', token) 
+                    });
+                    res.cookie('auth', token) ;
                     res.status(HttpStatus.CREATED).json({message: 'User created successfully', user, token});
                 })
                 .catch(err => {
@@ -53,4 +53,4 @@ module.exports = {
                 })
         });
     }
-}
+};
