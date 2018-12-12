@@ -12,7 +12,7 @@ module.exports = {
         const schema = Joi.object().keys({
             username: Joi.string().alphanum().min(3).max(30).required(),
             email: Joi.string().email({ minDomainAtoms: 2 }).required(),
-            password: Joi.string().regex(/^[a-zA-Z0-9]{8,30}$/).required()
+            password: Joi.string().alphanum().min(8).max(30).required()
         });
 
         const { error, value } = Joi.validate(req.body, schema);
